@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { getRecommendations } from "../api";
 
-/*
-  THE FIX IS HERE:
-  We are now correctly receiving 'isLoading' as a prop from App.jsx
-*/
 export default function MovieForm({ onResult, setIsLoading, isLoading }) {
   // Use state for all form fields
   const [formData, setFormData] = useState({
@@ -71,22 +67,29 @@ export default function MovieForm({ onResult, setIsLoading, isLoading }) {
             Movie Type
           </legend>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
-            {["Hollywood", "Bollywood", "South Indian", "Any"].map((type) => (
-              <div key={type} className="flex items-center">
-                <input
-                  type="radio"
-                  id={type}
-                  name="movie_type"
-                  value={type}
-                  checked={formData.movie_type === type}
-                  onChange={handleChange}
-                  className="h-4 w-4 accent-blue-500" // Styles the radio button itself
-                />
-                <label htmlFor={type} className="ml-2 block text-sm text-gray-200">
-                  {type}
-                </label>
-              </div>
-            ))}
+            {["Hollywood", "Bollywood", "South Indian", "Any"].map((type) => {
+              // --- THIS IS THE FIX ---
+              // We create a unique ID by combining the name and the type
+              const uniqueId = `movie_type_${type.replace(/\s/g, '')}`;
+              // --- END OF FIX ---
+
+              return (
+                <div key={uniqueId} className="flex items-center">
+                  <input
+                    type="radio"
+                    id={uniqueId} // Use the new unique ID
+                    name="movie_type"
+                    value={type}
+                    checked={formData.movie_type === type}
+                    onChange={handleChange}
+                    className="h-4 w-4 accent-blue-500" // Styles the radio button itself
+                  />
+                  <label htmlFor={uniqueId} className="ml-2 block text-sm text-gray-200"> {/* Use the new unique ID */}
+                    {type}
+                  </label>
+                </div>
+              );
+            })}
           </div>
         </fieldset>
 
@@ -96,22 +99,29 @@ export default function MovieForm({ onResult, setIsLoading, isLoading }) {
             Release Preference
           </legend>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
-            {["Newly Released", "Classic / Old", "Any"].map((pref) => (
-              <div key={pref} className="flex items-center">
-                <input
-                  type="radio"
-                  id={pref}
-                  name="release_pref"
-                  value={pref}
-                  checked={formData.release_pref === pref}
-                  onChange={handleChange}
-                  className="h-4 w-4 accent-blue-500"
-                />
-                <label htmlFor={pref} className="ml-2 block text-sm text-gray-200">
-                  {pref}
-                </label>
-              </div>
-            ))}
+            {["Newly Released", "Classic / Old", "Any"].map((pref) => {
+              // --- THIS IS THE FIX ---
+              // We do the same thing here to make a unique ID
+              const uniqueId = `release_pref_${pref.replace(/\s/g, '').replace('/', '')}`;
+              // --- END OF FIX ---
+
+              return (
+                <div key={uniqueId} className="flex items-center">
+                  <input
+                    type="radio"
+                    id={uniqueId} // Use the new unique ID
+                    name="release_pref"
+                    value={pref}
+                    checked={formData.release_pref === pref}
+                    onChange={handleChange}
+                    className="h-4 w-4 accent-blue-500"
+                  />
+                  <label htmlFor={uniqueId} className="ml-2 block text-sm text-gray-200"> {/* Use the new unique ID */}
+                    {pref}
+                  </label>
+                </div>
+              );
+            })}
           </div>
         </fieldset>
 
@@ -119,7 +129,7 @@ export default function MovieForm({ onResult, setIsLoading, isLoading }) {
         <div>
           <button
             type="submit"
-            disabled={isLoading} // <-- This line now works
+            disabled={isLoading}
             className="w-full bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg
                        transition-all duration-200
                        hover:bg-blue-700
