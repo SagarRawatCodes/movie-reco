@@ -30,11 +30,8 @@ genai.configure(api_key=GEMINI_API_KEY)
 async def lifespan(app: FastAPI):
     print("App startup: Creating database tables...")
     
-    # --- THIS IS THE FIX ---
-    # checkfirst=True tells SQLAlchemy to NOT try to create
-    # tables that already exist. This prevents the crash.
+    # This prevents the "table already exists" crash
     metadata.create_all(bind=engine, checkfirst=True)
-    # --- END OF FIX ---
 
     print("App startup: Database tables created.")
     yield
@@ -47,7 +44,7 @@ app = FastAPI(title="Smart Movie Finder", lifespan=lifespan)
 # Add your Vercel frontend URL to this "allow list"
 origins = [
     "http://localhost:5173",  # For your local development
-    "https.movie-reco-bice.vercel.app"  # For your live Vercel app
+    "https://movie-reco-bice.vercel.app"  # For your live Vercel app
 ]
 
 app.add_middleware(
