@@ -5,13 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from typing import List, Optional
 from contextlib import asynccontextmanager
-
-# Import Gemini, Schemas, and DB models
 import google.generativeai as genai
+
+# --- NEW IMPORT ---
+# We need this to catch the specific crash
+from sqlalchemy.exc import OperationalError
+# --- END IMPORT ---
+
 from .schemas import MovieItem, RecommendRequest, RecommendResponse
 from .models import save_recommendation
-
-# Import the engine and metadata from database.py
 from .database import engine, metadata
 
 # Load environment variables
@@ -30,10 +32,18 @@ genai.configure(api_key=GEMINI_API_KEY)
 async def lifespan(app: FastAPI):
     print("App startup: Creating database tables...")
     
-    # This prevents the "table already exists" crash
-    metadata.create_all(bind=engine, checkfirst=True)
+    # --- THIS IS THE FIX ---
+    # We wrap this in a try/except block.
+    # This stops the "race condition" from crashing the server.
+    try:
+        metadata.create_all(bind=engine, checkfirst=True)
+        print("App startup: Database tables created/checked.")
+    except OperationalError:
+        print("App startup: Tables already exist, skipping creation.")
+        pass # Ignore the error, the tables are already there
+    # --- END OF FIX ---
 
-    print("App startup: Database tables created.")
+    print("App startup: Ready to go.")
     yield
     # Code here would run on app shutdown
 
