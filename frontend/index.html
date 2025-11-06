@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- ADD THIS ONE LINE -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- We can also add the Inter font for a cleaner look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <title>Movie Recommender</title>
+    
+    <style>
+      /* Apply the dark theme and font to the whole page */
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #111827; /* This is Tailwind's bg-gray-900 */
+        color: #E5E7EB; /* This is Tailwind's text-gray-200 */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

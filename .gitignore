@@ -1,0 +1,19 @@
+Ignore Python virtual environment
+
+.venv/
+pycache/
+
+Ignore database files
+
+*.db
+*.sqlite3
+
+Ignore all .env files (THIS IS THE MOST IMPORTANT LINE)
+
+.env
+*.env
+
+Ignore frontend dependencies
+
+frontend/node_modules/
+frontend/dist/
