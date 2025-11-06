@@ -36,10 +36,10 @@ async def lifespan(app: FastAPI):
 
 
 # Tell FastAPI to use our new lifespan function
-app = FastAPI(title="Smart Movie Finder", lifespan=lifan)
+# This line is now corrected (lifespan=lifespan)
+app = FastAPI(title="Smart Movie Finder", lifespan=lifespan)
 
-# --- THIS IS THE FIX ---
-# We must add your Vercel frontend URL to this "allow list"
+# Add your Vercel frontend URL to this "allow list"
 origins = [
     "http://localhost:5173",  # For your local development
     "https.movie-reco-bice.vercel.app"  # For your live Vercel app
@@ -52,7 +52,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# --- END OF FIX ---
 
 
 # --- 3. UPDATED Helper function to call Gemini ---
@@ -64,6 +63,7 @@ def get_gemini_recommendations(prompt: str, movie_type: str, release_pref: str) 
 
     model = genai.GenerativeModel('gemini-2.5-flash')
 
+    # This prompt asks for a JSON object.
     gemini_prompt = f"""
     Based on the user's request, give me a list of 5 movie recommendations.
 
@@ -92,9 +92,16 @@ def get_gemini_recommendations(prompt: str, movie_type: str, release_pref: str) 
 
     try:
         response = model.generate_content(gemini_prompt)
+        
+        # Clean the response text to get only the JSON
         json_text = response.text.strip().lstrip("```json").rstrip("```")
+
+        # Parse the JSON string into a Python list of dictionaries
         movies_list = json.loads(json_text)
+
+        # Convert the list of dicts into a list of MovieItem objects
         movie_items = [MovieItem(**movie) for movie in movies_list]
+
         return movie_items
 
     except Exception as e:
@@ -102,7 +109,7 @@ def get_gemini_recommendations(prompt: str, movie_type: str, release_pref: str) 
         try:
             print(f"Raw response from Gemini: {response.text}")
         except:
-            pass
+            pass # response object might not exist
         raise HTTPException(status_code=500, detail="Gemini API error or invalid JSON response.")
 
 
