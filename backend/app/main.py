@@ -29,14 +29,19 @@ genai.configure(api_key=GEMINI_API_KEY)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("App startup: Creating database tables...")
-    metadata.create_all(bind=engine)
+    
+    # --- THIS IS THE FIX ---
+    # checkfirst=True tells SQLAlchemy to NOT try to create
+    # tables that already exist. This prevents the crash.
+    metadata.create_all(bind=engine, checkfirst=True)
+    # --- END OF FIX ---
+
     print("App startup: Database tables created.")
     yield
     # Code here would run on app shutdown
 
 
 # Tell FastAPI to use our new lifespan function
-# This line is now corrected (lifespan=lifespan)
 app = FastAPI(title="Smart Movie Finder", lifespan=lifespan)
 
 # Add your Vercel frontend URL to this "allow list"
